@@ -9,6 +9,6 @@
 <form method="post" action="view.jsp">
     <input type="submit" value="显示盘符" />
 </form>
-
+<a href="readpdf.jsp">sss</a>
 </body>
 </html>
