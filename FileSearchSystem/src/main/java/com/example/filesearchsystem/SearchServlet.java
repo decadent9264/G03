@@ -5,7 +5,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,33 +15,63 @@ import java.util.List;
 @WebServlet("/SearchServlet")
 public class SearchServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 获取用户提交的文件夹路径
-        String folderPath = request.getParameter("folder");
+        // 获取用户提交的文件夹路径和关键词
+        String folderPath = request.getParameter("folderPath");
+        String keyword = request.getParameter("keyword");
 
-        // 获取文件列表
-        List<String> fileList = getFileList(folderPath);
+        // 进行文件内容检索
+        String searchResult = performSearch(folderPath, keyword);
 
-        // 将文件列表存储在请求属性中，以便在 JSP 中进行展示
-        request.setAttribute("fileList", fileList);
+        // 将检索结果存储在请求属性中，以便在 JSP 中进行展示
+        request.setAttribute("searchResult", searchResult);
 
-        // 转发到展示文件列表的 JSP 页面
+        // 转发到展示检索结果的 JSP 页面
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
-    private List<String> getFileList(String folderPath) {
-        List<String> fileList = new ArrayList<>();
+    private String performSearch(String folderPath, String keyword) {
+        StringBuilder resultBuilder = new StringBuilder();
 
-        // 遍历文件夹下的所有文件，筛选出 pdf 和 word 文件，并将路径添加到列表中
+        // 遍历文件夹下的所有文件，进行内容检索
         File folder = new File(folderPath);
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
-                if (file.isFile() && (file.getName().endsWith(".pdf") || file.getName().endsWith(".doc")||file.getName().endsWith(".txt")||file.getName().endsWith(".docx"))) {
-                    fileList.add(file.getAbsolutePath());
+                if (file.isFile() && (file.getName().endsWith(".pdf") || file.getName().endsWith(".doc")||file.getName().endsWith(".docx")||file.getName().endsWith(".txt"))) {
+                    // 读取文件内容进行检索
+                    List<String> matchedLines = searchFileContent(file, keyword);
+                    // 构建检索结果字符串
+                    if (!matchedLines.isEmpty()) {
+                        resultBuilder.append("路径: ").append(file.getAbsolutePath()).append("\n");
+                        resultBuilder.append("-----------------------\n");
+                        for (String line : matchedLines) {
+                            resultBuilder.append(line).append("\n");
+                        }
+                        resultBuilder.append("\n");
+                    }
                 }
             }
         }
 
-        return fileList;
+        return resultBuilder.toString();
+    }
+
+    private List<String> searchFileContent(File file, String keyword) {
+        List<String> matchedLines = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            int lineNumber = 1;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(keyword)) {
+                    matchedLines.add("行号" + lineNumber + "\t" + line);
+                }
+                lineNumber++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return matchedLines;
     }
 }

@@ -2,13 +2,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>显示盘符</title>
+    <title>APP文件检索系统</title>
+    <script>
+        function handleFolderSelection(event) {
+            var selectedFolder = event.target.files[0];
+            var folderPath = selectedFolder.path;
+            document.getElementById("folderPath").value = folderPath;
+        }
+    </script>
 </head>
 <body>
-<h1>点击按钮显示盘符</h1>
-<form method="post" action="view.jsp">
-    <input type="submit" value="显示盘符" />
+<h1>APP文件检索系统</h1>
+<form action="SearchServlet" method="post">
+    <label for="folder">选择文件夹:</label>
+    <input type="file" id="folder" name="folder" webkitdirectory="" directory="" onchange="handleFolderSelection(event)" required>
+    <input type="hidden" id="folderPath" name="folderPath">
+    <br>
+    <label for="keyword">输入关键词:</label>
+    <input type="text" id="keyword" name="keyword" required>
+    <button type="submit">开始检索</button>
 </form>
 
+<%-- 显示检索结果 --%>
+<h2>检索结果：</h2>
+<pre>
+        <%= request.getAttribute("searchResult") %>
+    </pre>
 </body>
 </html>
