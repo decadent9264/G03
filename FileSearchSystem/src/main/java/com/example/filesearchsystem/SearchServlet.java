@@ -20,7 +20,7 @@ public class SearchServlet extends HttpServlet {
         String keyword = request.getParameter("keyword");
 
         // 进行文件内容检索
-        String searchResult = performSearch(folderPath, keyword);
+        List<String> searchResult = performSearch(folderPath, keyword);
 
         // 将检索结果存储在请求属性中，以便在 JSP 中进行展示
         request.setAttribute("searchResult", searchResult);
@@ -29,31 +29,24 @@ public class SearchServlet extends HttpServlet {
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
-    private String performSearch(String folderPath, String keyword) {
-        StringBuilder resultBuilder = new StringBuilder();
+    private List<String> performSearch(String folderPath, String keyword) {
+        List<String> matchedLines = new ArrayList<>();
 
         // 遍历文件夹下的所有文件，进行内容检索
         File folder = new File(folderPath);
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
-                if (file.isFile() && (file.getName().endsWith(".pdf") || file.getName().endsWith(".doc")||file.getName().endsWith(".docx")||file.getName().endsWith(".txt"))) {
+                if (file.isFile() && (file.getName().endsWith(".txt") || file.getName().endsWith(".doc") || file.getName().endsWith(".docx"))) {
                     // 读取文件内容进行检索
-                    List<String> matchedLines = searchFileContent(file, keyword);
-                    // 构建检索结果字符串
-                    if (!matchedLines.isEmpty()) {
-                        resultBuilder.append("路径: ").append(file.getAbsolutePath()).append("\n");
-                        resultBuilder.append("-----------------------\n");
-                        for (String line : matchedLines) {
-                            resultBuilder.append(line).append("\n");
-                        }
-                        resultBuilder.append("\n");
-                    }
+                    List<String> lines = searchFileContent(file, keyword);
+                    // 将匹配行的内容存储在列表中
+                    matchedLines.addAll(lines);
                 }
             }
         }
 
-        return resultBuilder.toString();
+        return matchedLines;
     }
 
     private List<String> searchFileContent(File file, String keyword) {
@@ -64,7 +57,7 @@ public class SearchServlet extends HttpServlet {
             int lineNumber = 1;
             while ((line = reader.readLine()) != null) {
                 if (line.contains(keyword)) {
-                    matchedLines.add("行号" + lineNumber + "\t" + line);
+                    matchedLines.add("文件名：" + file.getName() + "，行号：" + lineNumber + "，内容：" + line);
                 }
                 lineNumber++;
             }
