@@ -35,9 +35,6 @@
 
 <!-- 显示检索结果 -->
 <h2>检索结果：</h2>
-<pre>
-    <%= request.getAttribute("searchResult") %>
-</pre>
     <%
         List<String> searchResult = (List<String>) request.getAttribute("searchResult");
         if (searchResult != null && !searchResult.isEmpty()) {
