@@ -1,3 +1,4 @@
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -37,5 +38,15 @@
 <pre>
     <%= request.getAttribute("searchResult") %>
 </pre>
+    <%
+        List<String> searchResult = (List<String>) request.getAttribute("searchResult");
+        if (searchResult != null && !searchResult.isEmpty()) {
+            for (String line : searchResult) {
+    %>
+    <p><%= line %></p>
+    <%
+        }
+    }
+    %>
 </body>
 </html>
