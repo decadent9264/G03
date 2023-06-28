@@ -1,17 +1,18 @@
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="com.cz.wdpdf.FileContentExtractor" %>
-<%
-    String folderPath = "C:\\Users\\86182\\Desktop\\jjjj";
-    String outputPath = "C:\\Users\\86182\\Desktop\\sjk\\output.docx";
-
-    // 调用后端 Java 代码处理文件内容
-    FileContentExtractor fileExtractor = new FileContentExtractor();
-    List<String> contentList = fileExtractor.extractContentFromFolder(folderPath);
-
-    // 保存内容到输出文件
-    fileExtractor.saveContentToWord(contentList, outputPath);
-    %>
-success
-<%
-%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>文本文件内容检索</title>
+</head>
+<body>
+<h1>文本文件内容检索</h1>
+<form action="SearchServlet" method="post">
+    <label for="folderPath">文件夹路径：</label>
+    <input type="text" id="folderPath" name="folderPath" value="C:\\Users\\86182\\Desktop\\jjjj" required readonly>
+    <br>
+    <label for="keyword">关键词：</label>
+    <input type="text" id="keyword" name="keyword" required>
+    <button type="submit">开始检索</button>
+</form>
+</body>
+</html>
