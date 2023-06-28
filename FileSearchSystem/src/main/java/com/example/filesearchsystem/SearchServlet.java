@@ -54,10 +54,15 @@ public class SearchServlet extends HttpServlet {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
+            matchedLines.add("文件名：" + file.getName());
+            System.out.println(file.getName());
+            matchedLines.add(System.lineSeparator());
             int lineNumber = 1;
             while ((line = reader.readLine()) != null) {
+
                 if (line.contains(keyword)) {
-                    matchedLines.add("文件名：" + file.getName() + "，行号：" + lineNumber + "，内容：" + line);
+                    matchedLines.add( "行号：" + lineNumber + "内容：" + line);
+                    matchedLines.add(System.lineSeparator());
                 }
                 lineNumber++;
             }
