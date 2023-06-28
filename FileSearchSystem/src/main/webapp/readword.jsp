@@ -26,13 +26,19 @@
 
 <%-- 显示检索结果 --%>
 <h2>检索结果：</h2>
-<% List<String> searchResults = (List<String>) request.getAttribute("searchResult"); %>
-<% if (searchResults != null && searchResults.size() > ) { %>
+<% List<String> searchResults = (List<String>) request.getAttribute("searchResults"); %>
+<% if (searchResults != null && searchResults.size() > 0) { %>
+<% for (String result : searchResults) { %>
+<% String[] lines = result.split("\n"); %>
+<p><%= lines[0] %></p>
+<hr>
 <ul>
-  <% for (String result : searchResults) { %>
-  <li><%= result %></li>
+  <% for (int i = 2; i < lines.length; i++) { %>
+  <% String[] lineParts = lines[i].split("\t"); %>
+  <li>行号<%= lineParts[0].substring(2) %>: <%= lineParts[1] %></li>
   <% } %>
 </ul>
+<% } %>
 <% } else { %>
 <p>没有找到匹配的结果。</p>
 <% } %>
