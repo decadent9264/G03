@@ -10,14 +10,14 @@
             if (selectedFolder) {
                 var folderPath = selectedFolder.webkitRelativePath.split("/").slice(0, -1).join("/");
                 sessionStorage.setItem('folderPath', folderPath);
-                document.getElementById("folderPath").value = "D:"+"\\"+folderPath;
+                document.getElementById("folderPath").value = "I:"+"\\"+folderPath;
             }
         }
 
         window.onload = function() {
             var folderPath = sessionStorage.getItem('folderPath');
             if (folderPath) {
-                document.getElementById("folderPath").value = "D:"+"\\"+folderPath;
+                document.getElementById("folderPath").value = "I:"+"\\"+folderPath;
             }
         }
     </script>

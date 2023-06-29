@@ -2,6 +2,8 @@ package com.example.filesearchsystem;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -42,6 +44,24 @@ public class SearchServlet extends HttpServlet {
                     List<String> lines = searchFileContent(file, keyword);
                     // 将匹配行的内容存储在列表中
                     matchedLines.addAll(lines);
+                }else if (file.getName().endsWith(".doc")) {
+                    try (FileInputStream fis = new FileInputStream(file);
+                         HWPFDocument doc = new HWPFDocument(fis)) {
+                        WordExtractor extractor = new WordExtractor(doc);
+                        String[] paragraphs = extractor.getParagraphText();
+                        matchedLines.add(System.lineSeparator());
+                        matchedLines.add("文件名：" + file.getName());
+                        matchedLines.add("-------------------------");
+                        int lineNumber = 1;
+                        for (String paragraph : paragraphs) {
+                            if (paragraph.contains(keyword)) {
+                                matchedLines.add("行号：" + lineNumber + "，内容：" + paragraph);
+                            }
+                            lineNumber++;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
