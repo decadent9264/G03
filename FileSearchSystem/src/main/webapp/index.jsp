@@ -50,6 +50,19 @@
             element.click();
             document.body.removeChild(element);
         }
+        function downloadResultsTXT() {
+            var results = document.getElementById("searchResults").innerText;
+            var keyword = document.getElementById("keyword").value;
+            var highlightedResults = results.replace(new RegExp(keyword, 'g'), keyword);
+
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(highlightedResults));
+            element.setAttribute('download', 'search_results.txt');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
     </script>
 </head>
 <body>
@@ -92,7 +105,7 @@
 
 <!-- 下载按钮 -->
 <button onclick="downloadResults()">下载结果为HTML</button>
-
+<button onclick="downloadResultsTXT()">下载结果为TXT</button>
 <script>
     restoreKeyword(); // 恢复关键词文本框的值
 </script>
