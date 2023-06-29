@@ -4,6 +4,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/SearchServlet")
-public class SearchServlet extends HttpServlet {
+    public class SearchServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 获取用户提交的文件夹路径和关键词
         String folderPath = request.getParameter("folderPath");
@@ -39,7 +41,7 @@ public class SearchServlet extends HttpServlet {
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
-                if (file.isFile() && (file.getName().endsWith(".txt") || file.getName().endsWith(".pdf") || file.getName().endsWith(".docx"))) {
+                if (file.isFile() && (file.getName().endsWith(".txt") || file.getName().endsWith(".pdf") )) {
                     // 读取文件内容进行检索
                     List<String> lines = searchFileContent(file, keyword);
                     // 将匹配行的内容存储在列表中
@@ -56,6 +58,24 @@ public class SearchServlet extends HttpServlet {
                         for (String paragraph : paragraphs) {
                             if (paragraph.contains(keyword)) {
                                 matchedLines.add("行号：" + lineNumber + "，内容：" + paragraph);
+                            }
+                            lineNumber++;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else if (file.getName().endsWith(".docx")) {
+                    try (FileInputStream fis = new FileInputStream(file);
+                         XWPFDocument doc = new XWPFDocument(fis)) {
+                        List<XWPFParagraph> paragraphs = doc.getParagraphs();
+                        matchedLines.add(System.lineSeparator());
+                        matchedLines.add("文件名：" + file.getName());
+                        matchedLines.add("-------------------------");
+                        int lineNumber = 1;
+                        for (XWPFParagraph paragraph : paragraphs) {
+                            String text = paragraph.getText();
+                            if (text.contains(keyword)) {
+                                matchedLines.add("行号：" + lineNumber + "，内容：" + text);
                             }
                             lineNumber++;
                         }
