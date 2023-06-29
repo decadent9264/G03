@@ -3,6 +3,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        .highlight {
+            background-color: red;
+        }
+    </style>
     <title>APP文件检索系统</title>
     <script>
         function handleFolderSelection(event) {
@@ -35,15 +40,27 @@
 
 <!-- 显示检索结果 -->
 <h2>检索结果：</h2>
-    <%
-        List<String> searchResult = (List<String>) request.getAttribute("searchResult");
-        if (searchResult != null && !searchResult.isEmpty()) {
-            for (String line : searchResult) {
-    %>
-    <p><%= line %></p>
-    <%
+<%
+    String keyword = request.getParameter("keyword");
+%>
+<%
+    List<String> searchResult = (List<String>) request.getAttribute("searchResult");
+    if (searchResult != null && !searchResult.isEmpty()) {
+        for (String line : searchResult) {
+            // 判断当前行是否是文件名
+            if (!line.endsWith(".docx") && !line.endsWith(".txt")) {
+                // 使用正则表达式将关键字标红
+                String highlightedLine = line.replaceAll(keyword, "<span class=\"highlight\">" + keyword + "</span>");
+%>
+<p><%= highlightedLine %></p>
+<%
+} else {
+%>
+<p><%= line %></p>
+<%
+            }
         }
     }
-    %>
+%>
 </body>
 </html>
