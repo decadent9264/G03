@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/SearchServlet")
-    public class SearchServlet extends HttpServlet {
+public class SearchServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 获取用户提交的文件夹路径和关键词
         String folderPath = request.getParameter("folderPath");
@@ -41,12 +41,12 @@ import java.util.List;
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
-                if (file.isFile() && (file.getName().endsWith(".txt") || file.getName().endsWith(".pdf") )) {
+                if (file.isFile() && (file.getName().endsWith(".txt") || file.getName().endsWith(".pdf"))) {
                     // 读取文件内容进行检索
                     List<String> lines = searchFileContent(file, keyword);
                     // 将匹配行的内容存储在列表中
                     matchedLines.addAll(lines);
-                }else if (file.getName().endsWith(".doc")) {
+                } else if (file.getName().endsWith(".doc")) {
                     try (FileInputStream fis = new FileInputStream(file);
                          HWPFDocument doc = new HWPFDocument(fis)) {
                         WordExtractor extractor = new WordExtractor(doc);
@@ -64,7 +64,7 @@ import java.util.List;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }else if (file.getName().endsWith(".docx")) {
+                } else if (file.getName().endsWith(".docx")) {
                     try (FileInputStream fis = new FileInputStream(file);
                          XWPFDocument doc = new XWPFDocument(fis)) {
                         List<XWPFParagraph> paragraphs = doc.getParagraphs();
@@ -86,13 +86,11 @@ import java.util.List;
             }
         }
         return matchedLines;
-
     }
 
     private List<String> searchFileContent(File file, String keyword) {
         List<String> matchedLines = new ArrayList<>();
         if (file.getName().endsWith(".txt")) {
-
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))) {
                 String line;
                 matchedLines.add(System.lineSeparator());
@@ -103,24 +101,14 @@ import java.util.List;
                 while ((line = reader.readLine()) != null) {
                     System.out.println(line.toString());
                     if (line.indexOf(keyword) >= 0) {
-                        matchedLines.add("行号：" + lineNumber + "内容：" + line);
+                        matchedLines.add("行号：" + lineNumber + "，内容：" + line);
                     }
                     lineNumber++;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else if(file.getName().endsWith(".pdf")){
-            /**try (FileInputStream fis = new FileInputStream(file);
-                 PDDocument pdfDoc = PDDocument.load(fis)) {
-                PDFTextStripper stripper = new PDFTextStripper();
-                String content = stripper.getText(pdfDoc);
-                matchedLines.add(content);
-                System.out.println("ssss");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }**/
+        } else if (file.getName().endsWith(".pdf")) {
             try (PDDocument pdfDoc = PDDocument.load(file)) {
                 PDFTextStripper stripper = new PDFTextStripper();
                 String content = stripper.getText(pdfDoc);
